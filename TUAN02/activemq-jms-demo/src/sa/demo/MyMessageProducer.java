@@ -1,5 +1,7 @@
 package sa.demo;
 
+import java.util.Scanner;
+
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
@@ -29,22 +31,30 @@ public class MyMessageProducer {
 
 			session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 			destination = session.createQueue("MyQueue");
-			
+
 			producer = session.createProducer(destination);
-			
-			message = session.createTextMessage("This is text message");
-			
-			producer.send(message);
-			
-			System.out.println("Sent message: "+message.getText());
-		
+			boolean run = true;
+			while (run) {
+				System.out.println("Enter message: ");
+				String msg = new Scanner(System.in).nextLine();
+				if (msg.equalsIgnoreCase("exit")) {
+					run = false;
+				} else {
+					message = session.createTextMessage(msg);
+					producer.send(message);
+				}
+
+			}
+
+			System.out.println("conservation end...");
+
 		} catch (NamingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (JMSException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}finally {
+		} finally {
 			try {
 				producer.close();
 				session.close();
