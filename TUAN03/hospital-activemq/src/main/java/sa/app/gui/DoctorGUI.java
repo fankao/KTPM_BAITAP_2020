@@ -17,6 +17,7 @@ import javax.jms.MessageListener;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -39,11 +40,13 @@ import sa.app.entity.BacSi;
 import sa.app.entity.BenhNhan;
 import sa.app.entity.KhamBenh;
 import sa.app.jms.JMSManage;
+import java.awt.Dimension;
 
 public class DoctorGUI extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
 
+	private BacSi bacSi;
 	private BacSiDAO bacSiDAO;
 
 	private JTextField txtCMND;
@@ -55,12 +58,14 @@ public class DoctorGUI extends JFrame implements ActionListener {
 	private JList<BenhNhan> list;
 	private JButton btnCapNhatTT;
 
-	public DoctorGUI(String title) throws Exception {
-		super(title);
+	public DoctorGUI(BacSi bacSi) throws Exception {
+		super("Bác sĩ: " + bacSi.getHotenbacsy());
+		this.bacSi = bacSi;
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		getContentPane().setLayout(new BorderLayout(0, 0));
 
 		JPanel pnDSBenhNhan = new JPanel();
+		pnDSBenhNhan.setPreferredSize(new Dimension(300, 10));
 		pnDSBenhNhan.setBorder(
 				new TitledBorder(new LineBorder(null, 2), "Danh s\u00E1ch b\u00EAnh nh\u00E2n ch\u1EDD kh\u00E1m",
 						TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
@@ -194,7 +199,7 @@ public class DoctorGUI extends JFrame implements ActionListener {
 					try {
 						BenhNhan benhNhan = gson.fromJson(((TextMessage) message).getText(), BenhNhan.class);
 						benhNhans.add(benhNhan);
-						list.setListData(benhNhans);
+						showListPatient(benhNhans);
 					} catch (JsonSyntaxException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -205,6 +210,7 @@ public class DoctorGUI extends JFrame implements ActionListener {
 				}
 
 			}
+
 		});
 		bacSiDAO = new BacSiDAOImpl();
 		btnGoiKham.addActionListener(this);
@@ -218,7 +224,6 @@ public class DoctorGUI extends JFrame implements ActionListener {
 		if (o.equals(btnGoiKham)) {
 			showInfoPatient(bn);
 		} else if (o.equals(btnCapNhatTT)) {
-
 			saveInfoPatient(bn);
 		}
 
@@ -230,7 +235,6 @@ public class DoctorGUI extends JFrame implements ActionListener {
 	 * @param bn
 	 */
 	private void saveInfoPatient(BenhNhan bn) {
-		BacSi bacSi = new BacSi("222", "Tuấn Anh");
 		bacSi.luuTTKhamBenh(new KhamBenh(bn, LocalDateTime.now(), txaNDKham.getText()));
 		bacSiDAO.save(bacSi);
 	}
@@ -246,6 +250,20 @@ public class DoctorGUI extends JFrame implements ActionListener {
 		txtHoTen.setText(bn.getHoten());
 		txaDiaChi.setText(bn.getDiachi());
 		EditableTextComponent(false, txtCMND, txtHoTen, txtMaBN, txaDiaChi);
+
+	}
+
+	/**
+	 * Hiện danh sách bệnh nhân chờ khám
+	 * 
+	 * @param benhNhans
+	 */
+	private void showListPatient(Vector<BenhNhan> benhNhans) {
+		DefaultListModel<BenhNhan> listModel = new DefaultListModel<BenhNhan>();
+		for (BenhNhan benhNhan : benhNhans) {
+			listModel.addElement(benhNhan);
+		}
+		list.setModel(listModel);
 
 	}
 

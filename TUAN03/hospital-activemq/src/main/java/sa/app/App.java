@@ -1,5 +1,6 @@
 package sa.app;
 
+import sa.app.entity.BacSi;
 import sa.app.gui.DoctorGUI;
 import sa.app.gui.PatientGUI;
 
@@ -8,7 +9,8 @@ public class App {
 	
 		try {
 			showPatientGUI("Lễ tân");
-			showDoctorGUI("Bác sĩ khám bệnh");
+			showDoctorGUI(new BacSi("BS001", "An"));
+			showDoctorGUI(new BacSi("BS002", "Kim"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -20,8 +22,8 @@ public class App {
 		gui.setLocationRelativeTo(null);
 		gui.setVisible(true);
 	}
-	private static void showDoctorGUI(String title) throws Exception {
-		DoctorGUI gui = new DoctorGUI(title);
+	private static void showDoctorGUI(BacSi bs) throws Exception {
+		DoctorGUI gui = new DoctorGUI(bs);
 		gui.setSize(1000,600);
 		gui.setLocationRelativeTo(null);
 		gui.setVisible(true);

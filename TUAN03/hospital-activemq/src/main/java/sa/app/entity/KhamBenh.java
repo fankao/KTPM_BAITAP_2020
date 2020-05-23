@@ -12,7 +12,7 @@ import javax.persistence.ManyToOne;
 @Embeddable
 public class KhamBenh implements Serializable {
 	private static final long serialVersionUID = 1L;
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH })
+	@ManyToOne(cascade = { CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH })
 	@JoinColumn(name = "msbn")
 	private BenhNhan benhNhan;
 	

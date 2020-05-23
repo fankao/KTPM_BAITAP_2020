@@ -14,6 +14,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -23,11 +24,15 @@ import javax.swing.border.TitledBorder;
 
 import com.google.gson.Gson;
 
+import sa.app.dao.BenhNhanDAO;
+import sa.app.dao.BenhNhanDAOImpl;
 import sa.app.entity.BenhNhan;
 import sa.app.jms.JMSManage;
 
 public class PatientGUI extends JFrame implements ActionListener {
 	private static final long serialVersionUID = 1L;
+	private BenhNhanDAO benhNhanDAO;
+
 	private JTextField txtMaBN;
 	private JTextField txtCMND;
 	private JTextField txtHoTen;
@@ -35,8 +40,6 @@ public class PatientGUI extends JFrame implements ActionListener {
 	private JButton btnTimCMND;
 	private JButton btnSubmit;
 	private JTextArea textArea;
-	
-
 
 	public PatientGUI(String title) {
 		super(title);
@@ -144,13 +147,17 @@ public class PatientGUI extends JFrame implements ActionListener {
 		lblHoTen.setPreferredSize(lblMaBN.getPreferredSize());
 
 		btnSubmit.addActionListener(this);
+		btnTimCMND.addActionListener(this);
+		btnTimMSSV.addActionListener(this);
+
+		benhNhanDAO = new BenhNhanDAOImpl();
 
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object o = e.getSource();
-		if(o.equals(btnSubmit)) {
+		if (o.equals(btnSubmit)) {
 			Gson gson = new Gson();
 			try {
 				/*
@@ -159,26 +166,55 @@ public class PatientGUI extends JFrame implements ActionListener {
 				Session session = JMSManage.getInstance().getSesstion();
 				Destination destination = session.createQueue("HospitalQueue");
 				MessageProducer producer = session.createProducer(destination);
-				
-				BenhNhan bn = new BenhNhan(txtMaBN.getText(), txtCMND.getText(), txtHoTen.getText(), textArea.getText());
+
+				BenhNhan bn = new BenhNhan(txtMaBN.getText(), txtCMND.getText(), txtHoTen.getText(),
+						textArea.getText());
 				// encoding obj thành json
 				String json = gson.toJson(bn);
-				
+
 				TextMessage message = session.createTextMessage(json);
-				
+
 				producer.send(message);
-				
-				
-				
+				JOptionPane.showMessageDialog(null, "Lưu thông tin khách hàng thành công");
+
+				cleanTextField();
+
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			
-			
-			
+
+		} else if (o.equals(btnTimCMND)) {
+			// tìm thông tin bênh nhân theo cmnd
+			if (txtCMND.getText().trim().equalsIgnoreCase("")) {
+				JOptionPane.showMessageDialog(null, "Nhập số CMND để tìm bệnh nhân");
+			} else {
+				BenhNhan bn = benhNhanDAO.findByCMND(txtCMND.getText());
+				// nếu thông tin bênh nhân tồn tại
+				if (bn != null) {
+					showPatientInfo(bn);
+				}
+			}
 		}
-		
+
+	}
+
+	private void showPatientInfo(BenhNhan bn) {
+		txtCMND.setText(bn.getSocmnd());
+		txtHoTen.setText(bn.getHoten());
+		txtMaBN.setText(bn.getMsbn());
+		textArea.setText(bn.getDiachi());
+
+	}
+
+	private void cleanTextField() {
+		txtCMND.setText("");
+		txtHoTen.setText("");
+		txtMaBN.setText("");
+		textArea.setText("");
+
+		txtHoTen.requestFocus();
+
 	}
 
 }

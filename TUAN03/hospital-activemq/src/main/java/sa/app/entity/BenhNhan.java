@@ -16,6 +16,7 @@ public class BenhNhan implements Serializable{
 	private String socmnd;
 	@Column(columnDefinition = "NVARCHAR(150)")
 	private String hoten;
+	@Column(columnDefinition = "NVARCHAR(200)")
 	private String diachi;
 	
 	public BenhNhan() {
