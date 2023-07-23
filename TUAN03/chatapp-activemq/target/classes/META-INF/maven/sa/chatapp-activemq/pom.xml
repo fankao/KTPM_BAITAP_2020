@@ -4,7 +4,7 @@
   <artifactId>chatapp-activemq</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <properties>
-		<hibernate.version>5.4.1.Final</hibernate.version>
+		<hibernate.version>5.4.24.Final</hibernate.version>
 		<sqlserver.connector.version>6.4.0.jre8</sqlserver.connector.version>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
